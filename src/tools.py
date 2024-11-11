@@ -81,7 +81,8 @@ def auto_function(problem = '2-2-3'):
         cst1 = [X[i]*sum([X[j] for j in range(Ngadget, N) if mat[i][j]==1])<=1 for i in range(Ngadget,N)]
         cst2 =  [(1-X[i])*sum([(1-X[j]) for j in range(Ngadget, N) if mat[i][j]==1])<=1 for i in range(Ngadget,N)]
     elif problem == '3-2-5':
-
+        cst1 = [X[i]*sum([X[j] for j in range(NG, N) if mat[i][j]==1])<=2 for i in range(NG,N)]
+        cst2 =  [(1-X[i])*sum([(1-X[j]) for j in range(NG,N) if mat[i][j]==1])<=2 for i in range(NG,N)]
 
     with open(function_file , 'w') as f:
         xstr = '('

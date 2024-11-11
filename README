@@ -31,6 +31,7 @@
     - 'CORE_USED': for parallelization stuff. I use 4.
     - 'PROBLEM': 3-2-5 or 2-2-3.   
     - 'N' : number of nodes.
+    - 'NG' : gadget size. For the flower on 48 nodes it was 12 (basically the NG first nodes are considered as without input). It is only useful when running exhaustive
 
 >What are data/slices/
     - it's the strategy I used to make the exhaustive try of a gadget doable. Basically each slice is some part of the input space (the one that starts with the slice name). There's a single line in each file that represent the last input that the program tested. It tests the inputs in chunks of size 2^14. there are 256 slices, and the progress is saved (aka the slices are updated) once every slice processed one chunk. On my computer with 4 cores the progress was updated every 1-2 mins.
