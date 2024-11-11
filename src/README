@@ -1,0 +1,77 @@
+>How to run the program
+    -run a terminal from loc_optcut/ and use 'python3 src/main.py'
+    -I own a linux but still you *should* have no problem using it with any other OS
+
+>Libraries
+    - among the least common one there are igraph and z3. igraph is a graph-drawing tool and z3 is the sat solver.
+    - https://python.igraph.org/en/stable/
+    - https://github.com/Z3Prover/z3
+
+>Add new graphs to study
+    - You can code what the adjacency matrix looks like, as with Dennis' code.
+    - If you can't figure an easy way to do it, this is what I've been doing:
+        - go to houseofgraphs: https://houseofgraphs.org/
+        - draw your own graph (I suggest to 'show labels')
+        - download the adjacency matrix
+        - rename and move the file to data/adjs/
+        - run the program, use the command 'settings'
+        - modify GRAPH_PATH to the path of your desired adjacency matrix
+    -If you want to later print the graph with a given layout, you can also add a file in data/layouts/. The layout has to be done "by hand".
+
+>In case you want to print some graphs
+    - igraph is a quite rigid thing but easy to use. By default it finds its own layout for the graph. If you want to give the graph a specific look (say, a grid?) you have to manually specify the what the position of each node. This is not convenient but also I thinks its a minor problem. If you want to know how a layout is used I suggest the last few lines of draw_save_to_look_at() in src/tools.py
+
+>Settings
+    - you can modify various things. I strongly suggest to not modify them by hand as it's almost unreadable. Use the 'settings' command instead.
+    - 'GRAPH_PATH': where the adjacency matrix is
+    - 'LAYOUT_PATH': where the layout is (in case you want to print some stuff)
+    - 'SAVING_PATH_TXT': the name of the file where you want to store some inputs. stuff is append at the end of the file.
+    - 'SAVING_PATH_IMG': where you want to save images. When you start something new I suggest to create a folder in img/ 
+    - 'EXTRA_NAME': if you want some extra names to be appened to your images
+    - 'CORE_USED': for parallelization stuff. I use 4.
+    - 'PROBLEM': 3-2-5 or 2-2-3.   
+    - 'N' : number of nodes.
+
+>What are data/slices/
+    - it's the strategy I used to make the exhaustive try of a gadget doable. Basically each slice is some part of the input space (the one that starts with the slice name). There's a single line in each file that represent the last input that the program tested. It tests the inputs in chunks of size 2^14. there are 256 slices, and the progress is saved (aka the slices are updated) once every slice processed one chunk. On my computer with 4 cores the progress was updated every 1-2 mins.
+
+>src/outdated/
+    - a bunch of useless stuff. I keep them to remember how to do some things.
+    - old/parallel.py shows a "simple" example on how the slices work.
+    - slice_executor.py is also kind of the same thing, but there's other things inside that are no longer relevant.
+
+>data/automation
+    - contains 3 files. It's an attempt at making the code faster by loading less things in memory. I'm not sure it helps in case of adj-matrices, but it sure do for function.
+    - Basically when you run the automation command, it fetches the current house of graph file (GRAPH_PATH) and write in data/automation/ the corresponding python  function according to the graph problem + the matrix.
+    - When it is done one must go in the code and modify:
+        -line 198 (mat = (...)) by the content of data/automation/adj_matrix #TODO LINE NUMBER MAY CHANGE
+        -last line of auto_verification by the content of data/automation/function
+            - auto_verification checks if an input is valid or not according to the problem.
+            - it is MUCH faster than calling z3 because:
+                1. you dont call z3
+                2. the "and" implementation in python
+
+>z3 solver
+    - the function in question is called hard_solver(). It has many parameters that are explained in the description.
+    - z3 uses constraints to determine if the problem has a solution. I'm using list comprehensions to make it work. 
+    - We only check if the problem is feasible (s.check()==sat). A solution to the problems can be found with an other z3 method but is not really required right now.
+
+>z3 constraints modelling
+    -Say for instance x[i] are the variables (as in node colors). 
+    -if we do 3-2-5, we want for instance that a node of color 1 has at most 2 neighbors of color 1. 
+    - So x[i]*(sum_{neighbors of i} x[j])<=2.
+    - all constraints of type cst1 and cst2 are built on this thing.
+    - there's also two other constraints: the fact that x[i] is 0 or 1; and the "instance", that is node with a given partial solution.
+    - There was a thing called the gadget - it made things too complicated so just ignore it. some variables that are named Ngadget or Ng shall be trated as 0.
+        -the "k" reffers to this input. it's a list of integers that MUST be the same size as the number of nodes. Integers are 0 or 1 if they correspond to a partial assignement
+        -some integers are 2: it correspond to nodes without partial assignment.
+
+>FUNCTIONS
+    - minimal-input: opens the file data/bad_input.txt that correspond to a non-solvable instance. 
+        - Try to figure out if we can discard some part of the input and still stay non-solvable. 
+        - it starts by finding a sub-input of significantly lower size that is unsolvable.
+        - When it's done; do a execute tree-search(), aka explore if more nodes can be erased.
+        - when it finds some minimal bad input, saves in data/leaves.txt
+    - exhaustive: test all possible inputs on the graph, and saves the one for which the problem has no solution. This execution can take up to days, HOWEVER:
+        - If you look for a graph that is always completable, you can open save_to_look_at.txt from time to time. If its not empty you can stop the computation here.
+        - Progress is regularily saved in data/slices/. Hence if there is a problem (energy cut?) or if you want to stop computing, you will not have to restart to 0.
