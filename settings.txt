@@ -1,1 +1,1 @@
-'data/adjs/flower_48.txt';'data/layouts/flower_48.txt';'data/save_to_look_at.txt';'data/img';'';'4';'3-2-5';'48'
+'data/adjs/flower_48.txt';'data/layouts/flower_48.txt';'data/save_to_look_at.txt';'data/img';'';'4';'3-2-5';'48';'12'

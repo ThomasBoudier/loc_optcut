@@ -17,19 +17,20 @@ def read_settings():
 GRAPH_PATH,LAYOUT_PATH,SAVING_PATH_TXT,SAVING_PATH_IMG,EXTRA_NAME,CORE_USED,PROBLEM, N,NG = read_settings()
 # due to some BAD programming these are strings containing strings. Hence the following thing:
 GRAPH_PATH = GRAPH_PATH[:len(GRAPH_PATH)-1][1:]
+print(GRAPH_PATH)
 LAYOUT_PATH = LAYOUT_PATH[:len(LAYOUT_PATH)-1][1:]
 SAVING_PATH_TXT[:len(SAVING_PATH_TXT)-1][1:]
 SAVING_PATH_IMG = SAVING_PATH_IMG[:len(SAVING_PATH_IMG)-1][1:]
 EXTRA_NAME = EXTRA_NAME[:len(EXTRA_NAME)-1][1:]
 PROBLEM[:len(PROBLEM)-1][1:]
-N = N[:len(N)-1][1:]
+N = int(N[:len(N)-1][1:])
 CORE_USED = CORE_USED[:len(CORE_USED)-1][1:]
-NG = NG[:len(NG)-1][1:]
+NG = int(NG[:len(NG)-1][1:])
 function_file = 'data/automation/function'
 
 Ng, Ngadget = NG, NG
 PROCESSES = 2**8        #number of different slices
-target = int(N)-Ngadget-8       #length of a slice id
+target = int(N)-Ngadget-8         #length of a slice id
 EXEC_BLOCK = 2**14      #slices are executed EXEC_BLOCK at a time at most (2^14 = ~16k)
 
 def return_layout():
@@ -105,12 +106,12 @@ def cleanup():
     target = 0      #length of a slice
     EXEC_BLOCK = 2**14      #slices are executed EXEC_BLOCK at a time at most (2^14 = ~16k)
     create_slices(target)
-    with open("2-2-3_gadgets/data/save_to_look_at.txt", 'w') as f:
+    with open("data/save_to_look_at.txt", 'w') as f:
         f.write('')
 
 def create_slices(target):
     for processid in range(PROCESSES):
-        fprocess = open('2-2-3_gadgets/data/slices/slice_'+'{0:08b}'.format(processid), 'w')
+        fprocess = open('data/slices/slice_'+'{0:08b}'.format(processid), 'w')
         fprocess.write('0'*target)
         fprocess.close()
 
@@ -118,7 +119,7 @@ def basic_read():
     ### open all files; for each print the value of the first item in 10th base
     ## hence for 2nd file '00000001', will print the value of 00000001000000000....0
     for processid in range(PROCESSES):
-        with open('2-2-3_gadgets/data/slices/slice_'+'{0:08b}'.format(processid), 'r') as f:
+        with open('data/slices/slice_'+'{0:08b}'.format(processid), 'r') as f:
             input = f.readline()
             number = '{0:08b}'.format(processid)+input
             print(int(number,2))
@@ -126,7 +127,7 @@ def basic_read():
 def read_input(FILE_NUMBER):
     #read and print the first input of given file (as a int)
     file_id = '{0:08b}'.format(FILE_NUMBER)
-    with open('2-2-3_gadgets/data/slices/slice_'+file_id, 'r') as f:
+    with open('data/slices/slice_'+file_id, 'r') as f:
         input_file = f.readline()
     return input_file
 
@@ -147,23 +148,24 @@ def fifo(input):
 
 def draw_save_to_loook_at(extra=''):
     ''' pop lines from save_to_look_at and print them according to the current problem layout (see automation.py)'''
-    mat = return_adj_matrix(mode ='gadget')
+    mat = return_adj_matrix()
     lay0 = return_layout()
     G = igraph.Graph.Adjacency(mat, mode = 'undirected')
-    file = open('2-2-3_gadgets/data/save_to_look_at.txt', "r")
+    file = open('data/save_to_look_at.txt', "r")
     while len(file.readlines())>0:
-        line = fifo('2-2-3_gadgets/data/save_to_look_at.txt')
+        line = fifo('data/save_to_look_at.txt')
         line = line[:len(line)-1]
-        file = open('2-2-3_gadgets/data/save_to_look_at.txt', 'r')
-        col = ['red'*(i=='1')+'green'*(i=='0')+'white'*(i=='2') for i in line]
-        filename = '2-2-3_gadgets/data/img/'+extra+line+'.png'
+        file = open('data/save_to_look_at.txt', 'r')
+        col = ['red'*(i=='1')+'green'*(i=='0')+'gray'*(i=='2') for i in line]
+        filename = 'data/img/'+extra+line+'.png'
         #print(filename)
-        igraph.plot(G, vertex_label=[i for i in range(54)], target =filename, vertex_color = col, layout=lay0 )
+        print(G, [i for i in range(N)], filename,  col, lay0)
+        igraph.plot(G, vertex_label=[i for i in range(N)], target =filename, vertex_color = col, layout = lay0)
         file.close()
 
 def plot_randomization():
     """open savefile and plot the randomization results in %age"""
-    savefile = '2-2-3_gadgets/data/quick-randomization.txt'
+    savefile = 'data/quick-randomization.txt'
     def recollect_random():
         with open(savefile, 'r') as f:
             L = f.readlines()
@@ -456,7 +458,7 @@ def exhaustive():
     def executor(file_number):
         """execute CHUNKSIZE operations of the corresponding file"""
         file_id = '{0:08b}'.format(file_number)
-        with open('2-2-3_gadgets/data/slices/slice_'+file_id, 'r') as f:
+        with open('data/slices/slice_'+file_id, 'r') as f:
             starting_value = int(file_id+f.readline(), 2)
 
         for k in range(CHUNKSIZE):
@@ -465,9 +467,9 @@ def exhaustive():
             #print(input_b, input, type(input_b), type(input))
             if auto_verification(input_b):
                 if hard_solver(input_b, mat, N, NG, mode = 'gadget', problem = PROBLEM)==False:
-                    with open('2-2-3_gadgets/data/save_to_look_at.txt', 'a') as f:
+                    with open('data/save_to_look_at.txt', 'a') as f:
                         f.write(input_b+'\n')
-        with open('2-2-3_gadgets/data/slices/slice_'+file_id, 'w') as f:
+        with open('data/slices/slice_'+file_id, 'w') as f:
             f.write(input_b[8:])
 
     def parallel_executor():
