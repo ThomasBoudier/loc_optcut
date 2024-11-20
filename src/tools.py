@@ -198,6 +198,7 @@ def hard_solver(k,mat = mat, n=N, nG=Ngadget, mode = 'gadget', problem = '2-2-3'
     minimal - Ng are gadget and some nodes after may have 2 as input - aka no input. 
     random - no gadget, some nodes have input, some other not. must have len(k) = nG = n in this mode 
     random-input - same as random but test the validity of the input in itself
+    quick-random - return None or a solution instead of true/false
     
     PROBLEM
     2-2-3, 3-2-5 implemented
@@ -222,21 +223,34 @@ def hard_solver(k,mat = mat, n=N, nG=Ngadget, mode = 'gadget', problem = '2-2-3'
         cst2 =  [(1-X[i])*sum([(1-X[j]) for j in range(n) if (mat[i][j]==1 and k[j]!=2)])<=2 for i in range(n) if X[i]!=2]
     if problem == '3-2-5' and mode == 'minimal':
         s=len(k)
-        #print(len(X), n, )
         cst1 = [X[i]*sum([X[j] for j in range(s) if mat[i][j]==1])<=2 for i in range(s)]
         cst2 = [(1-X[i])*sum([(1-X[j]) for j in range(s) if mat[i][j]==1])<=2 for i in range(s)]
+    #in case of quick random - we only care about the nodes in the input aka; input is labelled as 00010111... where 1 means we care about this node.
+    if problem == '3-2-5' and (mode =='quick-random'):
+        cst1 = [X[i]*sum([X[j] for j in range(n) if (mat[i][j]==1 and k[i]==1 and k[j]==1)] )<=2 for i in range(n)] 
+        cst2 =  [(1-X[i])*sum([(1-X[j]) for j in range(n) if (mat[i][j]==1 and k[i]==1 and k[j]==1)])<=2 for i in range(n)]
 
     if mode == 'gadget':
         instance =[X[i+nG] == k[i] for i in range(len(k))]    
-    elif mode == 'minimal':
-        instance =[X[i] == k[i] for i in range(len(k)) if k[i]!= 2 ]    
-    if mode == 'random' or mode == 'random-input':
+    elif mode == 'minimal' or mode == 'random-input':
+        instance = [If(k[i]!=2, X[i]==k[i], X[i]>=0) for i in range(len(k))]
+        #instance =[X[i] == k[i] for i in range(length) if k[i]!= 2 ]    
+    if mode == 'random': # or mode == 'random-input':
         #here same as minimal but no gadget.TODO: think about putting 2 when no input!!!
-        instance =[X[i] == k[i] for i in range(len(k)) if k[i]!= 2]    
+        instance =[X[i] == k[i] for i in range(len(k)) if k[i]!=2]    
+    if mode == 'quick-input': #no instance in this case.
+        instance = [] 
 
     s=Solver()
   
     s.add(bools+cst1+cst2+instance)
+    if mode == "quick-random":
+        if s.check()==sat:
+            m = s.model()
+            #we cannot just return [m.evaluate(X[i]) for i in range(n)] as we just want a solution on input.
+            return [m.evaluate(X[i]) if k[i]==1 else 2 for i in range(n)]
+        else:
+            return None
     if s.check()==sat:
         return True
     else:
@@ -283,13 +297,40 @@ def minimal_input(file_name, base_time = 1800, tampon_size = 12):
                 print(candidate_input)
                 #additional stuff TODO that is NOT what is below
                 if sum([1 for i in candidate_input if i!=2])<15:
-                    tree_search([2]*tampon_size+candidate_input)
+                    tree_search_2([2]*tampon_size+candidate_input)
                     return None
                 else:
                     p+=1
         #if we reached this point probably that p is to low (or we were unlucky)
         print('%d values were insufficient. Trying with %d'%(n-p, n-p+1))
         p+=-1
+
+def tree_search2(inp):
+    best = [len(inp)]
+    tree_search2_aux(inp,0,best,0)
+
+def tree_search2_aux(inp, start, best, recursion_depth):
+    if recursion_depth < 5:
+        print("Recursion depth=%d, start=%d" % (recursion_depth,start))
+    solvable = hard_solver(inp, n = 48, mode='minimal', problem='3-2-5')
+    if (start - inp[:start].count(2)) >= best[0]:
+        return solvable
+    if solvable:
+        return True
+    all_solvable = True
+    for i in range(start,len(inp)):
+        if inp[i] != 2:
+            t = inp[i]
+            inp[i] = 2
+            all_solvable &= tree_search2_aux(inp,i+1,best,recursion_depth+1)
+            inp[i] = t
+    if all_solvable:
+        value = len(inp) - inp.count(2)
+        if value < best[0]:
+            best[0] = value
+            print("Found leaf with %d fixed values" % (value))
+            print(inp)
+    return False
 
 def tree_search(inp):
     """inp: list of ints as 0122210... that must contain a value for all nodes.
@@ -486,3 +527,68 @@ def exhaustive():
             os.system('clear')
         #TODO to have a coherent print status think to change workload when changing the problem
     parallel_executor()
+
+ #next 3 functions are to build the matrix. 
+
+def nodeID(i,j, n):
+    return i*n + j
+
+def coordinates(v, n): # useful in case of printing
+    return v//n, v%n
+
+def gen_matrix(n): #original code from Dennis
+    g = igraph.Graph(n**2)
+    lay = [coordinates(v, n) for v in range(n**2)]
+    labels = [str(idx) for idx in lay] 
+    for i in range(n):
+        for j in range(n):
+            g.add_edge(nodeID(i,j, n), nodeID((i+1)%n,j,n))
+            g.add_edge(nodeID(i,j, n), nodeID(i,(j+1)%n,n))
+            if i%2==0 and j%2==0:
+                g.add_edge(nodeID(i,j,n), nodeID((i+1)%n,(j+1)%n,n))
+            if i%2==0 and j%2==1:
+                g.add_edge(nodeID(i,j,n), nodeID((i-1)%n,(j+1)%n,n))
+    return g.get_adjacency(), lay, labels 
+
+def quick_task_2(p):
+    EXEC = 10000 #change these values for finer testing or bigger graphs
+    n = 30
+    """sample EXEC times at probability p of nodes. 
+        At the difference of quicktask1 - now when node set S in randomly selected we solve PROBLEM on G[S], then see if we can extend a solution to G."""
+
+    savefile = 'data/quick-randomization.txt'
+    M, L, I = gen_matrix(n)
+    failure = 0
+    p = p/1000
+    for test in range(EXEC):
+        winners = random.sample(range(n**2), int(p*(n**2))) #winners have been selected.
+        k = [0]*(n**2)  #probably this can be done faster?
+        for w in winners:
+            k[w] =1
+                
+    solution = hard_solver(k, M, n**2, mode = 'quick-random', problem = PROBLEM )
+    #solution serves as a base input on G[S]
+
+    t=hard_solver(solution, M, n**2,mode = 'random-input', problem=PROBLEM) 
+            
+    if t == False:
+        failure+=1
+        #remove next two lines if you are uninterested in knowing which inputs may fail
+        with open(SAVING_PATH_TXT, '+a') as f:
+            f.write(solution)
+    with open(savefile, 'a') as f:
+        f.write(str(p)+ ','+str(failure/EXEC)+','+str(failure)+'\n')
+
+def randomization(n=20, EXEC= 10000):
+    """forms a nxn toroidal grid; pick some random nodes and some random input for them. Try to solve PROBLEM on them."""
+
+    savefile = 'data/quick-randomization.txt'
+    test_range = range(1, 990, 1) #probabilities tested
+                                # must be int so one line may need changement in quick_task_i
+   
+    print("starting tasks.")
+    def parallel_task():
+        p = Pool(4)
+        p.map(quick_task_2, test_range)
+
+    parallel_task()

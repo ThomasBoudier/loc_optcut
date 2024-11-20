@@ -52,6 +52,12 @@ while inp != 'exit':
     if inp == 'settings':
         settings()
     
+    if inp == 'exhaustive':
+        exhaustive()
+
+    if inp == 'randomization':
+        randomization()
+
     if inp == 'test':
         L = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
         x = ''
@@ -61,5 +67,5 @@ while inp != 'exit':
             f.write(x)
         draw_save_to_loook_at()
             
-    if inp == 'exhaustive':
-        exhaustive()
+
+    
