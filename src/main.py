@@ -59,13 +59,16 @@ while inp != 'exit':
         randomization()
 
     if inp == 'test':
-        L = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-        x = ''
-        for c in L:
-            x+= str(c)
-        with open('data/save_to_look_at.txt', 'a') as f:
-            f.write(x)
-        draw_save_to_loook_at()
-            
+        n = 30
+        M,L,I = gen_matrix(n)
+        
+    if inp == 'erase-random':
+        savefile = 'data/quick-randomization.txt'
+        with open(savefile, 'w') as f:
+            f.write('')
+        
+    if inp == 'randomization2':
+        print("Starting randomization procedure in details")
+        randomization2()            
 
     
