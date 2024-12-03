@@ -59,8 +59,8 @@ while inp != 'exit':
         randomization()
 
     if inp == 'test':
-        n = 30
-        M,L,I = gen_matrix(n)
+        M = return_adj_matrix()
+        print(hard_solver([], M, 9, 5,mode = 'gadgets_research',problem = '3-2-5' ))
         
     if inp == 'erase-random':
         savefile = 'data/quick-randomization.txt'
@@ -71,4 +71,24 @@ while inp != 'exit':
         print("Starting randomization procedure in details")
         randomization2()            
 
-    
+    if inp == 'gadgets_research':
+        t0 = time.time()
+        p = Pool(4)
+        print("Research begin")
+        p.map(gadgets_research, range(100))
+        t1 = time.time()
+        print('research done in %ds'%(int(t1-t0)))
+
+    if inp == 'draw_matrices':
+        #go in data/matrices/ and plot everything.
+        files = glob.glob("data/matrices/*")
+        for filename2 in files:
+            M = return_adj_matrix(filename2)
+            filename = filename2.split("data/matrices/")[1]
+            sol = hard_solver([],M,len(M[0]), len(M[0]), mode = 'solution', problem = '3-2-5')
+            name_img = 'img/blocking_gadgets/'+str(len(M[0]))+'_'+filename+'.png'
+            G = igraph.Graph.Adjacency(M, mode = 'undirected')
+            sol2 = [str(e) for e in sol] #no idea why but if i dont do it next line crashes
+            col = ['red'*(i=='1')+'green'*(i=='0')+'gray'*(i=='2') for i in sol2]
+            print(G, len(M[0]), col, name_img)
+            igraph.plot(G, vertex_label=[i for i in range(len(M[0]))],vertex_color=col,target = name_img)

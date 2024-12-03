@@ -7,6 +7,7 @@ import random
 import copy
 import time
 from multiprocessing import Pool
+import string
 
 def read_settings():
     with open('settings.txt', 'r') as f:
@@ -58,9 +59,9 @@ def return_layout():
             x+=c    
     return R
 
-def return_adj_matrix():
+def return_adj_matrix(path = GRAPH_PATH):
     """return the adjacency matrix. Takes the hog file stocked at GRAPH_PATH"""
-    with open(GRAPH_PATH, 'r') as f:
+    with open(path, 'r') as f:
         X= []
         for line in f.readlines():
             L = []
@@ -98,7 +99,6 @@ def auto_verification(k):
     """takes k in input (string of 0's and 1's) and verify using the automatically generated function that it's a valid input."""
     x = [0]*Ngadget + [int(ki) for ki in k]  
     return (x[24]*(0 + x[36] + x[38]) <= 1) and (x[25]*(0 + x[37] + x[39]) <= 1) and (x[26]*(0 + x[38] + x[40]) <= 1) and (x[27]*(0 + x[39] + x[41]) <= 1) and (x[28]*(0 + x[42] + x[44]) <= 1) and (x[29]*(0 + x[43] + x[45]) <= 1) and (x[30]*(0 + x[44] + x[46]) <= 1) and (x[31]*(0 + x[45] + x[47]) <= 1) and (x[32]*(0 + x[48] + x[50]) <= 1) and (x[33]*(0 + x[49] + x[51]) <= 1) and (x[34]*(0 + x[50] + x[52]) <= 1) and (x[35]*(0 + x[51] + x[53]) <= 1) and (x[36]*(0 + x[24] + x[37]) <= 1) and (x[37]*(0 + x[25] + x[36]) <= 1) and (x[38]*(0 + x[24] + x[26]) <= 1) and (x[39]*(0 + x[25] + x[27]) <= 1) and (x[40]*(0 + x[26] + x[42]) <= 1) and (x[41]*(0 + x[27] + x[43]) <= 1) and (x[42]*(0 + x[28] + x[40]) <= 1) and (x[43]*(0 + x[29] + x[41]) <= 1) and (x[44]*(0 + x[28] + x[30]) <= 1) and (x[45]*(0 + x[29] + x[31]) <= 1) and (x[46]*(0 + x[30] + x[48]) <= 1) and (x[47]*(0 + x[31] + x[49]) <= 1) and (x[48]*(0 + x[32] + x[46]) <= 1) and (x[49]*(0 + x[33] + x[47]) <= 1) and (x[50]*(0 + x[32] + x[34]) <= 1) and (x[51]*(0 + x[33] + x[35]) <= 1) and (x[52]*(0 + x[34] + x[53]) <= 1) and (x[53]*(0 + x[35] + x[52]) <= 1) and ((1 - x[25])*(0 + 1 - x[37] + 1 - x[39]) <= 1) and ((1 - x[26])*(0 + 1 - x[38] + 1 - x[40]) <= 1) and ((1 - x[27])*(0 + 1 - x[39] + 1 - x[41]) <= 1) and ((1 - x[28])*(0 + 1 - x[42] + 1 - x[44]) <= 1) and ((1 - x[29])*(0 + 1 - x[43] + 1 - x[45]) <= 1) and ((1 - x[30])*(0 + 1 - x[44] + 1 - x[46]) <= 1) and ((1 - x[31])*(0 + 1 - x[45] + 1 - x[47]) <= 1) and ((1 - x[32])*(0 + 1 - x[48] + 1 - x[50]) <= 1) and ((1 - x[33])*(0 + 1 - x[49] + 1 - x[51]) <= 1) and ((1 - x[34])*(0 + 1 - x[50] + 1 - x[52]) <= 1) and ((1 - x[35])*(0 + 1 - x[51] + 1 - x[53]) <= 1) and ((1 - x[36])*(0 + 1 - x[24] + 1 - x[37]) <= 1) and ((1 - x[37])*(0 + 1 - x[25] + 1 - x[36]) <= 1) and ((1 - x[38])*(0 + 1 - x[24] + 1 - x[26]) <= 1) and ((1 - x[39])*(0 + 1 - x[25] + 1 - x[27]) <= 1) and ((1 - x[40])*(0 + 1 - x[26] + 1 - x[42]) <= 1) and ((1 - x[41])*(0 + 1 - x[27] + 1 - x[43]) <= 1) and ((1 - x[42])*(0 + 1 - x[28] + 1 - x[40]) <= 1) and ((1 - x[43])*(0 + 1 - x[29] + 1 - x[41]) <= 1) and ((1 - x[44])*(0 + 1 - x[28] + 1 - x[30]) <= 1) and ((1 - x[45])*(0 + 1 - x[29] + 1 - x[31]) <= 1) and ((1 - x[46])*(0 + 1 - x[30] + 1 - x[48]) <= 1) and ((1 - x[47])*(0 + 1 - x[31] + 1 - x[49]) <= 1) and ((1 - x[48])*(0 + 1 - x[32] + 1 - x[46]) <= 1) and ((1 - x[49])*(0 + 1 - x[33] + 1 - x[47]) <= 1) and ((1 - x[50])*(0 + 1 - x[32] + 1 - x[34]) <= 1) and ((1 - x[51])*(0 + 1 - x[33] + 1 - x[35]) <= 1) and ((1 - x[52])*(0 + 1 - x[34] + 1 - x[53]) <= 1) and ((1 - x[53])*(0 + 1 - x[35] + 1 - x[52]) <= 1) and ((1 - x[53])*(0 + 1 - x[35] + 1 - x[52]) <= 1) and ((1-x[24])*(1- x[36] + 1-x[38]) <= 1)
-
 
 def cleanup():
     """ clean the slices. """
@@ -196,7 +196,9 @@ def hard_solver(k,mat = mat, n=N, nG=Ngadget, mode = 'gadget', problem = '2-2-3'
     random - no gadget, some nodes have input, some other not. must have len(k) = nG = n in this mode 
     random-input - same as random but test the validity of the input in itself
     quick-random - Returns None or a solution. input is 01000... where 0 means to ignore this node. and 1 means the node is present. the input is NOT an "input" but rather a "proof of existence" in the graph. 
-    
+    gadget_research - all ng first nodes MUST have the same color. 
+    solution - get any solution. no input.
+
     PROBLEM
     2-2-3, 3-2-5 implemented
     """    
@@ -209,6 +211,7 @@ def hard_solver(k,mat = mat, n=N, nG=Ngadget, mode = 'gadget', problem = '2-2-3'
     #all formulas are supposed to reflect this kind of expressions.
     #sometime the input comes as a list of ints being 012210010...
     #0 and 1 are classic colors; 2 is a special color "to ignore" s.t.: no input here for now
+    
     if problem == '2-2-3':
         cst1 = [X[i]*sum([X[j] for j in range(n) if mat[i][j]==1])<=1 for i in range(n)]
         cst2 =  [(1-X[i])*sum([(1-X[j]) for j in range(n) if mat[i][j]==1])<=1 for i in range(n)]
@@ -233,15 +236,23 @@ def hard_solver(k,mat = mat, n=N, nG=Ngadget, mode = 'gadget', problem = '2-2-3'
         instance = [If(k[i]!=2, X[i]==k[i], X[i]>=0) for i in range(len(k))]
         #instance =[X[i] == k[i] for i in range(length) if k[i]!= 2 ]    
     if mode == 'random': # or mode == 'random-input':
-        #here same as minimal but no gadget.TODO: think about putting 2 when no input!!!
+        #here same as minimal but no gadget.
         instance =[X[i] == k[i] for i in range(len(k)) if k[i]!=2]    
     if mode == 'quick-input': #no instance in this case.
         instance = [] 
+    if mode == 'gadgets_research':
+        instance = [sum([X[i]*(1-X[j]) for i in range(nG) for j in range(nG)])>=1]
+    if mode == 'solution':
+        instance = []
 
     s=Solver()
   
     s.add(bools+cst1+cst2+instance)
-    if mode == "quick-random":
+    if mode == 'solution':
+        if s.check()==sat:
+            m = s.model()
+            return [m.evaluate(X[i]) for i in range(n)]
+    if mode == "quick-random" :
         if s.check()==sat:
             m = s.model()
             #we cannot just return [m.evaluate(X[i]) for i in range(n)] as we just want a solution on input.
@@ -464,7 +475,7 @@ def settings():
             new_setting(id,user_input,content)
             with open('settings.txt', 'w') as f:
                 for line in content:
-                    f.write(line)
+                    f.write(line+';')
             print(setting_name(id) + ' set to ' + user_input)
 
         if user_input == 'print':
@@ -547,8 +558,8 @@ def gen_matrix(n): #original code from Dennis
     return g.get_adjacency(), lay, labels 
 
 def quick_task_2(p):
-    EXEC = 1000 #change these values for finer testing or bigger graphs
-    n = 20
+    EXEC = 5000 #change these values for finer testing or bigger graphs
+    n = 16
     """sample EXEC times at probability p of nodes. 
         At the difference of quicktask1 - now when node set S in randomly selected we solve PROBLEM on G[S], then see if we can extend a solution to G."""
 
@@ -601,9 +612,65 @@ def randomization2():
         if success:
             p+=-b
         else:
-            p = min(p+b, 995) #hence it never goes past 100%
-        b = 9*b/10
+            p = min(p+b, 998) #hence it never goes past 100%
+        b = 95*b/100
         it += 1
-        
+
         os.system('clear')
         print("Current values: (p, b)= (%d,%d ). Iterations: %d"%(p,b,it))
+
+def save_matrix(M, location):
+    """create a file at location and save the content of the matrix; "hog-style"""
+    X = ''
+    for line in M:
+        for e in line:
+            X +=str(e)+' '
+        X+='\n'
+    with open(location, 'w') as f:
+        f.write(X)
+
+def gadgets_research(dummy, mode = 'boundary2'):
+    """Look for gadgets with special properties
+    
+    boundary2= nodes that are not of degree 5 have 2 or 1 neighbors. Look for gadgets where low degree nodes have a specific given solution for 3-2-5 (aka all same color - or something else I'll programm later) TODO
+    """
+    EXEC = 10**3
+    savefolder = 'data/matrices/'
+    def degree_sequence(L):
+        "determine if a degree sequence is realizable or not. See On Realizability of a Set of Integers as Degrees of the Vertices of a Linear Graph, S. L. Hakimi, 1962, theorem 1"
+        return sum(L)==2 and sum(L[:len(L)-1])>= L[-1] and sum([1 for i in L if i<5])
+
+    def random_name():
+        """return a random name of length 8."""
+        chars = string.ascii_uppercase + string.digits
+        return ''.join(random.choice(chars) for _ in range(8))
+
+    found = 0
+    if mode == 'boundary2':
+        for n in range(8,16): #number of total nodes in the target gadget
+            for _ in range(EXEC):
+                correct = False #Is the degree sequence acceptable?
+                L=[]
+                while correct == False:
+                    n1 = random.randint(0,0)
+                    #n2 = random.randint(5, n//2) 
+                    n2 = 5
+                    n2 = n2+ ((n-n2)%2==1)
+                    L = [4]*n2+[5]*(n-n2)#[1]*n1+[4]*n2+[5]*(n-n1-n2) #with current params there's only degree 4 or 5 nodes.
+                    correct = True# degree_sequence(L)
+                G = igraph.Graph.Degree_Sequence(L, method = 'configuration_simple')
+            #print(G.get_adjacency())
+                test = hard_solver([],G.get_adjacency(),n, n2, mode='gadgets_research', problem = '3-2-5')
+                #os.system('clear')
+                if test == False:
+                    name = random_name() 
+                    #print(G.get_adjacency())
+                    save_matrix(G.get_adjacency(), savefolder+name)
+                    found+=1
+                    print("%d gadgets found."%(found))
+                
+
+
+
+
+
