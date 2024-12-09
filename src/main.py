@@ -12,18 +12,24 @@ size_input_in_slice = 20 #size of what is contains in slices. See "What are data
 
 inp = ''
 while inp != 'exit':
-    print("available commands: help; automation; clean-slices; draw-toroid; erase; exit;  ")
+    print("available commands: \n> help\n> exit\n\n> automation\n> clean-slides\n> draw\n> draw_gadgets\n> erase\n> exhaustive\n> gadgets_research\n> minimal_input\n> randomization\n> randomization2\n> settings\n> test\n")
     inp = input("type a command: ")
 
     if inp == 'help': 
         print(">automation -- generates automatically the file data/automation/function from the input given.\nIMPORTANT: once automation has been done you must manually copy/paste the content of in src/automation.py of auto_verification")
         print('>clean-slices -- erase the progress of data/slices.')
-        print(">draw -- draw all graphs saved as inputs in save_to_look_at.txt ")
+        print(">draw -- draw all graphs saved as inputs in save_to_look_at.txt. Inputs are relative to what exhaustive_search is doing. ")
+        print(">draw_gadgets -- draw all save matrices in data/matrices/. You might want to modify the function to select different folders.\n")
         print(">erase -- remove all content of data/img")
+        print(">exhaustive -- exhaustive exploration of all possible inputs on the given graph; bad inputs (non completable ones) are saved.\n")
         print(">exit -- close the programm")
+        print(">gadgets_research -- look for small graphs of particular interest. See the content of tools.gadgets_research() to modify research parameters.\n")
         print(">help -- display all commands and their use")
-        print('>minimal-input -- given a partial input that has no solution (in data/partial_input.txt) try to find a sub-partial-input of it s.t. it still has no solution.')
+        print('>minimal_input -- given a partial input that has no solution (in data/partial_input.txt) try to find a sub-partial-input of it s.t. it still has no solution.')
+        print(">randomization -- one the NxN 5-regular 'grid'; select a random subset of nodes, give them a solution and try to fill the rest of the graph. Results (failures/succes) are saved in quick-randomization.txt.\n") 
+        print(">randomization2 -- same idea but using a dichotomic approach.\n")
         print(">settings -- change parameters such as the size of graphs, filenames etc.")
+        print(">test -- Try new stuff here.\n")
         tmp = input("Press any key to continue.")
 
     if inp=='automation':
@@ -45,7 +51,7 @@ while inp != 'exit':
             os.remove(f)
         tmp = input("All figures in data/img have been erased. Press any key to continue.")
 
-    if inp== 'minimal-input':
+    if inp== 'minimal_input':
         print("starting minimal input procedure with a base time of 1800s.")
         minimal_input('/data/bad_input.txt', base_time=1800)
     

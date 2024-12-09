@@ -634,7 +634,7 @@ def gadgets_research(dummy, mode = 'boundary2'):
     
     boundary2= nodes that are not of degree 5 have 2 or 1 neighbors. Look for gadgets where low degree nodes have a specific given solution for 3-2-5 (aka all same color - or something else I'll programm later) TODO
     """
-    EXEC = 10**3
+    EXEC = 10**4
     savefolder = 'data/matrices/'
     def degree_sequence(L):
         "determine if a degree sequence is realizable or not. See On Realizability of a Set of Integers as Degrees of the Vertices of a Linear Graph, S. L. Hakimi, 1962, theorem 1"
@@ -644,31 +644,35 @@ def gadgets_research(dummy, mode = 'boundary2'):
         """return a random name of length 8."""
         chars = string.ascii_uppercase + string.digits
         return ''.join(random.choice(chars) for _ in range(8))
-
+    went_through=0
     found = 0
     if mode == 'boundary2':
-        for n in range(8,16): #number of total nodes in the target gadget
+        for n in range(6,20): #number of total nodes in the target gadget
+            L=[]
+            ni=[0,0,2,0]
+            for i in range(4):
+                for _ in range(ni[i]):
+                    L.append(i+1)
+                    
+            L = L+[5]*(n-sum(ni)) #[1]*n1+[4]*n2+[5]*(n-n1-n2) #with current params there's only degree 4 or 5 nodes.
+            print(L)
             for _ in range(EXEC):
-                correct = False #Is the degree sequence acceptable?
-                L=[]
-                while correct == False:
-                    n1 = random.randint(0,0)
-                    #n2 = random.randint(5, n//2) 
-                    n2 = 5
-                    n2 = n2+ ((n-n2)%2==1)
-                    L = [4]*n2+[5]*(n-n2)#[1]*n1+[4]*n2+[5]*(n-n1-n2) #with current params there's only degree 4 or 5 nodes.
-                    correct = True# degree_sequence(L)
-                G = igraph.Graph.Degree_Sequence(L, method = 'configuration_simple')
-            #print(G.get_adjacency())
-                test = hard_solver([],G.get_adjacency(),n, n2, mode='gadgets_research', problem = '3-2-5')
-                #os.system('clear')
-                if test == False:
-                    name = random_name() 
+                try: 
+                    G = igraph.Graph.Degree_Sequence(L, method = 'configuration_simple')
+                    went_through+=1
                     #print(G.get_adjacency())
-                    save_matrix(G.get_adjacency(), savefolder+name)
-                    found+=1
-                    print("%d gadgets found."%(found))
+                    test = hard_solver([],G.get_adjacency(),n, sum(ni), mode='gadgets_research', problem = '3-2-5')
+                    #os.system('clear')
+                    if test == False:
+                        name = random_name() 
+                        #print(G.get_adjacency())
+                        save_matrix(G.get_adjacency(), savefolder+name)
+                        found+=1
+                        print("%d gadgets found."%(found))
+                except:
+                    pass
                 
+    print(went_through)
 
 
 
