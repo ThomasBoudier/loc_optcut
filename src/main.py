@@ -12,14 +12,14 @@ size_input_in_slice = 20 #size of what is contains in slices. See "What are data
 
 inp = ''
 while inp != 'exit':
-    print("available commands: \n> help\n> exit\n\n> automation\n> clean-slides\n> draw\n> draw_gadgets\n> erase\n> exhaustive\n> gadgets_research\n> minimal_input\n> randomization\n> randomization2\n> settings\n> test\n")
+    print("available commands: \n> help\n> exit\n\n> automation\n> clean-slides\n> draw\n> draw_matrices\n> erase\n> exhaustive\n> gadgets_research\n> minimal_input\n> randomization\n> randomization2\n> settings\n> test\n")
     inp = input("type a command: ")
 
     if inp == 'help': 
         print(">automation -- generates automatically the file data/automation/function from the input given.\nIMPORTANT: once automation has been done you must manually copy/paste the content of in src/automation.py of auto_verification")
         print('>clean-slices -- erase the progress of data/slices.')
         print(">draw -- draw all graphs saved as inputs in save_to_look_at.txt. Inputs are relative to what exhaustive_search is doing. ")
-        print(">draw_gadgets -- draw all save matrices in data/matrices/. You might want to modify the function to select different folders.\n")
+        print(">draw_matrices -- draw all save matrices in data/matrices/. You might want to modify the function to select different folders.\n")
         print(">erase -- remove all content of data/img")
         print(">exhaustive -- exhaustive exploration of all possible inputs on the given graph; bad inputs (non completable ones) are saved.\n")
         print(">exit -- close the programm")
@@ -66,8 +66,16 @@ while inp != 'exit':
 
     if inp == 'test':
         M = return_adj_matrix()
-        print(hard_solver([], M, 9, 5,mode = 'gadgets_research',problem = '3-2-5' ))
+
+        sol = hard_solver([], M, len(M), 2, mode = 'solution', problem = '3-2-5')
+        print(sol)
+        if sol[0]==0:
+            sol[0]=1
+        else: 
+            sol[0]=0
+        print(hard_solver(sol[:2]+[2]*(len(M)-2), M, len(M), len(M), mode = 'random', problem = '3-2-5'))
         
+
     if inp == 'erase-random':
         savefile = 'data/quick-randomization.txt'
         with open(savefile, 'w') as f:
@@ -88,13 +96,23 @@ while inp != 'exit':
     if inp == 'draw_matrices':
         #go in data/matrices/ and plot everything.
         files = glob.glob("data/matrices/*")
+        def degreeList(L):
+            X=''
+            D = [0]*6
+            for e in L:
+                D[e-1]+=1
+            for e in range(1,len(D)):
+                X+=str(D[e])+'_'
+            return X
+
         for filename2 in files:
             M = return_adj_matrix(filename2)
             filename = filename2.split("data/matrices/")[1]
             sol = hard_solver([],M,len(M[0]), len(M[0]), mode = 'solution', problem = '3-2-5')
-            name_img = 'img/blocking_gadgets/'+str(len(M[0]))+'_'+filename+'.png'
             G = igraph.Graph.Adjacency(M, mode = 'undirected')
-            sol2 = [str(e) for e in sol] #no idea why but if i dont do it next line crashes
+            name_img = 'img/blocking_gadgets/'+'_'+degreeList(G.degree(range(len(M))))+str(len(M[0]))+filename+'.png'
+            sol2 = [str(e) for e in sol] #no idea why but if i dont do it next line crashes (even if i remove the '')
             col = ['red'*(i=='1')+'green'*(i=='0')+'gray'*(i=='2') for i in sol2]
+            vsize = [10*(dv) for dv in G.degree(range(len(M)))]
             print(G, len(M[0]), col, name_img)
-            igraph.plot(G, vertex_label=[i for i in range(len(M[0]))],vertex_color=col,target = name_img)
+            igraph.plot(G, vertex_size = vsize, vertex_label=[i for i in range(len(M[0]))],vertex_color=col,target = name_img)

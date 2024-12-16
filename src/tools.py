@@ -237,11 +237,14 @@ def hard_solver(k,mat = mat, n=N, nG=Ngadget, mode = 'gadget', problem = '2-2-3'
         #instance =[X[i] == k[i] for i in range(length) if k[i]!= 2 ]    
     if mode == 'random': # or mode == 'random-input':
         #here same as minimal but no gadget.
-        instance =[X[i] == k[i] for i in range(len(k)) if k[i]!=2]    
+        #print(len(k), X, len(X))
+        instance =[z3.If( k[i]!= 2, X[i]==k[i],X[i]>=0) for i in range(len(k))]
+            #[X[i] == k[i] for i in range(len(k)) if k[i]!=2)
     if mode == 'quick-input': #no instance in this case.
         instance = [] 
     if mode == 'gadgets_research':
-        instance = [sum([X[i]*(1-X[j]) for i in range(nG) for j in range(nG)])>=1]
+        #old ways. Dont use
+        instance = [sum([X[i]*(1-X[j]) for i in range(nG) for j in range(nG)])>1]
     if mode == 'solution':
         instance = []
 
@@ -649,7 +652,7 @@ def gadgets_research(dummy, mode = 'boundary2'):
     if mode == 'boundary2':
         for n in range(6,20): #number of total nodes in the target gadget
             L=[]
-            ni=[0,0,2,0]
+            ni=[0,7,0,0]
             for i in range(4):
                 for _ in range(ni[i]):
                     L.append(i+1)
@@ -661,8 +664,15 @@ def gadgets_research(dummy, mode = 'boundary2'):
                     G = igraph.Graph.Degree_Sequence(L, method = 'configuration_simple')
                     went_through+=1
                     #print(G.get_adjacency())
-                    test = hard_solver([],G.get_adjacency(),n, sum(ni), mode='gadgets_research', problem = '3-2-5')
+                    #old ways. dont use
+                    # test = hard_solver([],G.get_adjacency(),n, sum(ni), mode='gadgets_research', problem = '3-2-5')
                     #os.system('clear')
+                    sol = hard_solver([], G.get_adjacency(), n, 2, mode = 'solution', problem = '3-2-5')
+                    if sol[0]==0:
+                        sol[0]=1
+                    else: 
+                        sol[0]=0
+                    test = hard_solver(sol+[2]*(n-2), G.get_adjacency(), n, n, mode = 'random', problem = '3-2-5')
                     if test == False:
                         name = random_name() 
                         #print(G.get_adjacency())
