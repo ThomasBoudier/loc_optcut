@@ -65,15 +65,7 @@ while inp != 'exit':
         randomization()
 
     if inp == 'test':
-        M = return_adj_matrix()
-
-        sol = hard_solver([], M, len(M), 2, mode = 'solution', problem = '3-2-5')
-        print(sol)
-        if sol[0]==0:
-            sol[0]=1
-        else: 
-            sol[0]=0
-        print(hard_solver(sol[:2]+[2]*(len(M)-2), M, len(M), len(M), mode = 'random', problem = '3-2-5'))
+        test()
         
 
     if inp == 'erase-random':

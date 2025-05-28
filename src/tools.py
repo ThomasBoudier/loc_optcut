@@ -34,6 +34,14 @@ PROCESSES = 2**8        #number of different slices
 target = int(N)-Ngadget-8         #length of a slice id
 EXEC_BLOCK = 2**14      #slices are executed EXEC_BLOCK at a time at most (2^14 = ~16k)
 
+def test():
+    """write new things to test here; execute via test command"""
+    def gen(n):
+        return ''.join(random.choices('0','1') for _ in range(n))
+    print(gen(10))
+
+
+
 def return_layout():
     """return the layout of the graph. By hand, sadly. Layouts are of the form [(xi,yi)]""" 
     #a Layout looks like this:
@@ -650,9 +658,9 @@ def gadgets_research(dummy, mode = 'boundary2'):
     went_through=0
     found = 0
     if mode == 'boundary2':
-        for n in range(6,20): #number of total nodes in the target gadget
+        for n in range(6,30): #number of total nodes in the target gadget
             L=[]
-            ni=[0,7,0,0]
+            ni=[0,10,0,0]
             for i in range(4):
                 for _ in range(ni[i]):
                     L.append(i+1)
@@ -683,7 +691,6 @@ def gadgets_research(dummy, mode = 'boundary2'):
                     pass
                 
     print(went_through)
-
 
 
 
