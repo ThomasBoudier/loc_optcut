@@ -108,20 +108,37 @@ def auto_verification(k):
     x = [0]*Ngadget + [int(ki) for ki in k]  
     return (x[24]*(0 + x[36] + x[38]) <= 1) and (x[25]*(0 + x[37] + x[39]) <= 1) and (x[26]*(0 + x[38] + x[40]) <= 1) and (x[27]*(0 + x[39] + x[41]) <= 1) and (x[28]*(0 + x[42] + x[44]) <= 1) and (x[29]*(0 + x[43] + x[45]) <= 1) and (x[30]*(0 + x[44] + x[46]) <= 1) and (x[31]*(0 + x[45] + x[47]) <= 1) and (x[32]*(0 + x[48] + x[50]) <= 1) and (x[33]*(0 + x[49] + x[51]) <= 1) and (x[34]*(0 + x[50] + x[52]) <= 1) and (x[35]*(0 + x[51] + x[53]) <= 1) and (x[36]*(0 + x[24] + x[37]) <= 1) and (x[37]*(0 + x[25] + x[36]) <= 1) and (x[38]*(0 + x[24] + x[26]) <= 1) and (x[39]*(0 + x[25] + x[27]) <= 1) and (x[40]*(0 + x[26] + x[42]) <= 1) and (x[41]*(0 + x[27] + x[43]) <= 1) and (x[42]*(0 + x[28] + x[40]) <= 1) and (x[43]*(0 + x[29] + x[41]) <= 1) and (x[44]*(0 + x[28] + x[30]) <= 1) and (x[45]*(0 + x[29] + x[31]) <= 1) and (x[46]*(0 + x[30] + x[48]) <= 1) and (x[47]*(0 + x[31] + x[49]) <= 1) and (x[48]*(0 + x[32] + x[46]) <= 1) and (x[49]*(0 + x[33] + x[47]) <= 1) and (x[50]*(0 + x[32] + x[34]) <= 1) and (x[51]*(0 + x[33] + x[35]) <= 1) and (x[52]*(0 + x[34] + x[53]) <= 1) and (x[53]*(0 + x[35] + x[52]) <= 1) and ((1 - x[25])*(0 + 1 - x[37] + 1 - x[39]) <= 1) and ((1 - x[26])*(0 + 1 - x[38] + 1 - x[40]) <= 1) and ((1 - x[27])*(0 + 1 - x[39] + 1 - x[41]) <= 1) and ((1 - x[28])*(0 + 1 - x[42] + 1 - x[44]) <= 1) and ((1 - x[29])*(0 + 1 - x[43] + 1 - x[45]) <= 1) and ((1 - x[30])*(0 + 1 - x[44] + 1 - x[46]) <= 1) and ((1 - x[31])*(0 + 1 - x[45] + 1 - x[47]) <= 1) and ((1 - x[32])*(0 + 1 - x[48] + 1 - x[50]) <= 1) and ((1 - x[33])*(0 + 1 - x[49] + 1 - x[51]) <= 1) and ((1 - x[34])*(0 + 1 - x[50] + 1 - x[52]) <= 1) and ((1 - x[35])*(0 + 1 - x[51] + 1 - x[53]) <= 1) and ((1 - x[36])*(0 + 1 - x[24] + 1 - x[37]) <= 1) and ((1 - x[37])*(0 + 1 - x[25] + 1 - x[36]) <= 1) and ((1 - x[38])*(0 + 1 - x[24] + 1 - x[26]) <= 1) and ((1 - x[39])*(0 + 1 - x[25] + 1 - x[27]) <= 1) and ((1 - x[40])*(0 + 1 - x[26] + 1 - x[42]) <= 1) and ((1 - x[41])*(0 + 1 - x[27] + 1 - x[43]) <= 1) and ((1 - x[42])*(0 + 1 - x[28] + 1 - x[40]) <= 1) and ((1 - x[43])*(0 + 1 - x[29] + 1 - x[41]) <= 1) and ((1 - x[44])*(0 + 1 - x[28] + 1 - x[30]) <= 1) and ((1 - x[45])*(0 + 1 - x[29] + 1 - x[31]) <= 1) and ((1 - x[46])*(0 + 1 - x[30] + 1 - x[48]) <= 1) and ((1 - x[47])*(0 + 1 - x[31] + 1 - x[49]) <= 1) and ((1 - x[48])*(0 + 1 - x[32] + 1 - x[46]) <= 1) and ((1 - x[49])*(0 + 1 - x[33] + 1 - x[47]) <= 1) and ((1 - x[50])*(0 + 1 - x[32] + 1 - x[34]) <= 1) and ((1 - x[51])*(0 + 1 - x[33] + 1 - x[35]) <= 1) and ((1 - x[52])*(0 + 1 - x[34] + 1 - x[53]) <= 1) and ((1 - x[53])*(0 + 1 - x[35] + 1 - x[52]) <= 1) and ((1 - x[53])*(0 + 1 - x[35] + 1 - x[52]) <= 1) and ((1-x[24])*(1- x[36] + 1-x[38]) <= 1)
 
-def cleanup():
+def cleanup(mode = 'binary'):
     """ clean the slices. """
     PROCESSES = 2**8        #number of different slices
     target = 0      #length of a slice
     EXEC_BLOCK = 2**14      #slices are executed EXEC_BLOCK at a time at most (2^14 = ~16k)
-    create_slices(target)
+    create_slices(target, mode)
     with open("data/save_to_look_at.txt", 'w') as f:
         f.write('')
 
-def create_slices(target):
+def create_slices(target, mode = 'binary'):
     for processid in range(PROCESSES):
         fprocess = open('data/slices/slice_'+'{0:08b}'.format(processid), 'w')
         fprocess.write('0'*target)
         fprocess.close()
+  
+    def numberToBase(n, b): #code outrageously copied from the net. 
+        if n == 0:
+            return [0]
+        digits = []
+        while n:
+            digits.append(int(n % b))
+            n //= b
+        return digits[::-1]   
+    
+    if mode !='binary': #hence mode if thought as the base     
+        for processid in range(PROCESSES):
+            number = numberToBase(processid, mode)
+            name = ''
+            for e in number:
+                name+=str(e)
+            fprocess = open('data/slices/slice_'+ name, 'w')            
 
 def basic_read():
     ### open all files; for each print the value of the first item in 10th base
