@@ -36,9 +36,7 @@ EXEC_BLOCK = 2**14      #slices are executed EXEC_BLOCK at a time at most (2^14 
 
 def test():
     """write new things to test here; execute via test command"""
-    def gen(n):
-        return ''.join(random.choices('0','1') for _ in range(n))
-    print(gen(10))
+    cleanup(6)
 
 
 
@@ -110,7 +108,7 @@ def auto_verification(k):
 
 def cleanup(mode = 'binary'):
     """ clean the slices. """
-    PROCESSES = 2**8        #number of different slices
+    PROCESSES = 6**3       #number of different slices
     target = 0      #length of a slice
     EXEC_BLOCK = 2**14      #slices are executed EXEC_BLOCK at a time at most (2^14 = ~16k)
     create_slices(target, mode)
