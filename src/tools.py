@@ -38,6 +38,71 @@ def test():
     """write new things to test here; execute via test command"""
     cleanup(6)
 
+def cube_verification(input):
+    return True
+
+def parallel_for_fill():
+    CHUNKSIZE = 2**14 #arbitrary value - too low and youll slow down too much
+                        #too high and you may lose some time in case of multiple sessions
+
+    def parallel_cube_executor():
+        
+        i = 0
+        step = 100*(2**14/6**24) #=chuksize/total work per slice
+        progress = 0    
+        print('commencing process...')
+        while(progress<100):
+            p = Pool(4)
+            print("Current progress: ",progress)
+            p.map(executorcube, range(216))
+            i+=1
+            progress += step
+
+
+            os.system('clear')
+        #TODO to have a coherent print status think to change workload when changing the problem
+    parallel_cube_executor()
+
+def executorcube(file_number):
+    """execute CHUNKSIZE operations of the corresponding file"""
+    n = 27
+    #this looks suboptimal TODO fix if the computation is outrageously slow
+    M= return_adj_matrix('data/adjs/33cube.txt')
+    def numberToBase(n, b): #code outrageously copied from the net. 
+        if n == 0:
+            return [0]
+        digits = []
+        while n:
+            digits.append(int(n % b))
+            n //= b
+        return digits[::-1]   
+
+    number = numberToBase(file_number, 6)
+    name = ''
+    for e in number:
+        name+=str(e)
+    name = '000'+name
+    file_id = name[-3:]
+
+    with open('data/slices/slice_'+file_id, 'r') as f:
+            #number is saved in base 6
+        starting_value = int(file_id+f.readline(),6)
+        CHUNKSIZE = 2**14
+        for k in range(CHUNKSIZE):
+            input = starting_value + k
+            input_b6 = numberToBase(input, 6) #=total input 
+            #now input b6 is a list of int. (possibly void)
+            tmp = '0'*27
+            for e in input_b6:
+                tmp+=str(e)
+            input_b6=tmp[-27:]
+
+            if cube_verification(input_b6): #true means: it makes sense to check this input. 
+                if valid_coloring(input_b6,M):
+                    with open('data/save_to_look_at.txt', 'a') as f:
+                        f.write(input_b6+'\n')
+        with open('data/slices/slice_'+file_id, 'w') as f:
+            f.write(input_b6[3:])
 
 
 def return_layout():
@@ -218,7 +283,7 @@ def valid_coloring(input, mat):
     n = len(mat) #n of nodes
     X = [Int("x[%s]"%i) for i in range(n)] #vars declaration
     inp = [X[i]==input[i] for i in range(n)] #input locking
-    neigh = [X[i] != X[j] for i in range(n) for j in range(i) if mat[i, j] == 1] #neighbor const
+    neigh = [X[i] != X[j] for i in range(n) for j in range(i) if mat[i][j] == 1] #neighbor const
 
     s = Solver()
     s.add(inp+neigh)
@@ -564,7 +629,6 @@ def exhaustive():
         i = 0
         step = 100*(2**14/2**22) #=chuksize/total work per slice
         progress = 0    
-        t0 = time()
         print('commencing process...')
         while(progress<100):
             p = Pool(4)

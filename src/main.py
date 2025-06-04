@@ -12,11 +12,12 @@ size_input_in_slice = 20 #size of what is contains in slices. See "What are data
 
 inp = ''
 while inp != 'exit':
-    print("available commands: \n> help\n> exit\n\n> automation\n> clean-slides\n> draw\n> draw_matrices\n> erase\n> exhaustive\n> gadgets_research\n> minimal_input\n> randomization\n> randomization2\n> settings\n> test\n")
+    print("available commands: \n> help\n> exit\n\n> automation\n> clean-slides\n> cube\n> draw\n> draw_matrices\n> erase\n> exhaustive (BROKEN RN)\n> gadgets_research\n> minimal_input\n> randomization\n> randomization2\n> settings\n> test\n")
     inp = input("type a command: ")
 
     if inp == 'help': 
         print(">automation -- generates automatically the file data/automation/function from the input given.\nIMPORTANT: once automation has been done you must manually copy/paste the content of in src/automation.py of auto_verification")
+        print(">cube -- cube 3x3 coloring")
         print('>clean-slices -- erase the progress of data/slices.')
         print(">draw -- draw all graphs saved as inputs in save_to_look_at.txt. Inputs are relative to what exhaustive_search is doing. ")
         print(">draw_matrices -- draw all save matrices in data/matrices/. You might want to modify the function to select different folders.\n")
@@ -40,6 +41,9 @@ while inp != 'exit':
         cleanup()
         create_slices(size_input_in_slice)
         tmp = input("256 slices of size %d created. Press any key to continue."%(size_input_in_slice))
+
+    if inp == 'cube':
+        parallel_for_fill()
 
     if inp == 'draw':
         draw_save_to_loook_at(extra = EXTRA_NAME)
