@@ -195,6 +195,17 @@ def plot_randomization():
 
 mat = return_adj_matrix()
 
+def valid_coloring(input, mat):
+    """given an input to test and an adjacency matrix, figure out if the coloring is correct"""
+    n = len(mat) #n of nodes
+    X = [Int("x[%s]"%i) for i in range(n)] #vars declaration
+    inp = [X[i]==input[i] for i in range(n)] #input locking
+    neigh = [X[i] != X[j] for i in range(n) for j in range(i) if mat[i, j] == 1] #neighbor const
+
+    s = Solver()
+    s.add(inp+neigh)
+    return s.check()==sat 
+
 def hard_solver(k,mat = mat, n=N, nG=Ngadget, mode = 'gadget', problem = '2-2-3'):
     """call z3 and try to solve the problem. Note: ignore the whole "gadget" concept and rather run everything as random mode aka all nodes have an input 0,1 or 2 and we just ignore the existence of those that have 2 as input.
 
