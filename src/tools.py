@@ -116,10 +116,11 @@ def cleanup(mode = 'binary'):
         f.write('')
 
 def create_slices(target, mode = 'binary'):
-    for processid in range(PROCESSES):
-        fprocess = open('data/slices/slice_'+'{0:08b}'.format(processid), 'w')
-        fprocess.write('0'*target)
-        fprocess.close()
+    if mode == 'binary':
+        for processid in range(PROCESSES):
+            fprocess = open('data/slices/slice_'+'     {0:08b}'.format(processid), 'w')
+            fprocess.write('0'*target)
+            fprocess.close()
   
     def numberToBase(n, b): #code outrageously copied from the net. 
         if n == 0:
@@ -131,12 +132,14 @@ def create_slices(target, mode = 'binary'):
         return digits[::-1]   
     
     if mode !='binary': #hence mode if thought as the base     
-        for processid in range(PROCESSES):
+        for processid in range(PROCESSES+1):
             number = numberToBase(processid, mode)
             name = ''
             for e in number:
                 name+=str(e)
-            fprocess = open('data/slices/slice_'+ name, 'w')            
+            
+            name = '000'+name
+            fprocess = open('data/slices/slice_'+ name[-3:], 'w')            
 
 def basic_read():
     ### open all files; for each print the value of the first item in 10th base
