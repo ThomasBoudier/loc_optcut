@@ -62,6 +62,7 @@ def parallel_for_fill():
             os.system('clear')
         #TODO to have a coherent print status think to change workload when changing the problem
     parallel_cube_executor()
+
 def switcher(input, a, b):
     tmp = input[a]
     input[a] = input[b]
@@ -105,12 +106,15 @@ def executorcube(file_number):
             for e in input_b6:
                 tmp+=str(e)
             input_b6=tmp[-27:]
+            input_b6=switch(input_b6)
 
             if cube_verification(input_b6): #true means: it makes sense to check this input. 
                 if valid_coloring(input_b6,M):
                     with open('data/save_to_look_at.txt', 'a') as f:
+                        input_b6=switch(input_b6)
                         f.write(input_b6+'\n')
         with open('data/slices/slice_'+file_id, 'w') as f:
+            input_b6=switcher(input_b6)
             f.write(input_b6[3:])
 
 
