@@ -64,14 +64,12 @@ def parallel_for_fill():
     parallel_cube_executor()
 
 def switcher(input, a, b):
-    tmp = input[a]
-    input[a] = input[b]
-    input[b] = tmp
-    return input
+    
+    return input[:a] + input[b] + input[a+1:b] + input[a] + input[b+1:]
 
 def switch(input):
     #5,11,19 are switched with 0,1,2
-    return switcher(switcher(switcher(2,19),1,11),0,5)
+    return switcher(switcher(switcher(input,2,19),1,11),0,5)
 
 def executorcube(file_number):
     """execute CHUNKSIZE operations of the corresponding file"""
@@ -114,7 +112,7 @@ def executorcube(file_number):
                         input_b6=switch(input_b6)
                         f.write(input_b6+'\n')
         with open('data/slices/slice_'+file_id, 'w') as f:
-            input_b6=switcher(input_b6)
+            input_b6=switch(input_b6)
             f.write(input_b6[3:])
 
 
