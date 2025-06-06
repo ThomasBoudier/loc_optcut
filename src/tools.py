@@ -39,7 +39,7 @@ def test():
     cleanup(6)
 
 def cube_verification(input):
-    return True
+    return input[0] == 1 and input[1] != 2 and input[2] == 1 and input[3] != 2 and input[4] != 2 and input[6] != 0 and input[8] != 0 and input[9] != 2 and input[10] != 2 and input[12] != 1 and input[12] != 2 and input[13] == 0 and input[14] != 1 and input[15] != 1 and input[16] != 1 and input[17] != 1 and input[18] != 0 and input[20] != 0 and input[21] != 1 and input[22] != 1 and input[23] != 1 and input[24] != 0 and input[24] != 1 and input[25] != 1 and input[26] == 2
 
 def parallel_for_fill():
     CHUNKSIZE = 2**14 #arbitrary value - too low and youll slow down too much
@@ -62,6 +62,15 @@ def parallel_for_fill():
             os.system('clear')
         #TODO to have a coherent print status think to change workload when changing the problem
     parallel_cube_executor()
+def switcher(input, a, b):
+    tmp = input[a]
+    input[a] = input[b]
+    input[b] = tmp
+    return input
+
+def switch(input):
+    #5,11,19 are switched with 0,1,2
+    return switcher(switcher(switcher(2,19),1,11),0,5)
 
 def executorcube(file_number):
     """execute CHUNKSIZE operations of the corresponding file"""
