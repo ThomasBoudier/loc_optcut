@@ -36,10 +36,21 @@ EXEC_BLOCK = 2**14      #slices are executed EXEC_BLOCK at a time at most (2^14 
 
 def test():
     """write new things to test here; execute via test command"""
-    cleanup(6)
+    print("No test available")
+
+def cube_auto():
+    M = return_adj_matrix("data/adjs/33cube.txt")
+    L = ""
+    for i in range(len(M)):
+        for j in range(i):
+            if M[i][j]:
+                L+= " and (input["+str(i)+'] != input[' + str(j)+'])'
+    with open(function_file, 'w') as f:
+        f.write(L)
+
 
 def cube_verification(input):
-    return input[0] == 1 and input[1] != 2 and input[2] == 1 and input[3] != 2 and input[4] != 2 and input[6] != 0 and input[8] != 0 and input[9] != 2 and input[10] != 2 and input[12] != 1 and input[12] != 2 and input[13] == 0 and input[14] != 1 and input[15] != 1 and input[16] != 1 and input[17] != 1 and input[18] != 0 and input[20] != 0 and input[21] != 1 and input[22] != 1 and input[23] != 1 and input[24] != 0 and input[24] != 1 and input[25] != 1 and input[26] == 2
+    return input[0] == 1 and input[1] != 2 and input[2] == 1 and input[3] != 2 and input[4] != 2 and input[6] != 0 and input[8] != 0 and input[9] != 2 and input[10] != 2 and input[12] != 1 and input[12] != 2 and input[13] == 0 and input[14] != 1 and input[15] != 1 and input[16] != 1 and input[17] != 1 and input[18] != 0 and input[20] != 0 and input[21] != 1 and input[22] != 1 and input[23] != 1 and input[24] != 0 and input[24] != 1 and input[25] != 1 and input[26] == 2  and (input[9] != input[4]) and (input[9] != input[5]) and (input[9] != input[7]) and (input[9] != input[8]) and (input[10] != input[3]) and (input[10] != input[5]) and (input[10] != input[6]) and (input[10] != input[8]) and (input[11] != input[3]) and (input[11] != input[4]) and (input[11] != input[6]) and (input[11] != input[7]) and (input[12] != input[1]) and (input[12] != input[2]) and (input[12] != input[7]) and (input[12] != input[8]) and (input[13] != input[0]) and (input[13] != input[2]) and (input[13] != input[6]) and (input[13] != input[8]) and (input[14] != input[0]) and (input[14] != input[1]) and (input[14] != input[6]) and (input[14] != input[7]) and (input[15] != input[1]) and (input[15] != input[2]) and (input[15] != input[4]) and (input[15] != input[5]) and (input[16] != input[0]) and (input[16] != input[2]) and (input[16] != input[3]) and (input[16] != input[5]) and (input[17] != input[0]) and (input[17] != input[1]) and (input[17] != input[3]) and (input[17] != input[4]) and (input[18] != input[4]) and (input[18] != input[5]) and (input[18] != input[7]) and (input[18] != input[8]) and (input[18] != input[13]) and (input[18] != input[14]) and (input[18] != input[16]) and (input[18] != input[17]) and (input[19] != input[3]) and (input[19] != input[5]) and (input[19] != input[6]) and (input[19] != input[8]) and (input[19] != input[12]) and (input[19] != input[14]) and (input[19] != input[15]) and (input[19] != input[17]) and (input[20] != input[3]) and (input[20] != input[4]) and (input[20] != input[6]) and (input[20] != input[7]) and (input[20] != input[12]) and (input[20] != input[13]) and (input[20] != input[15]) and (input[20] != input[16]) and (input[21] != input[1]) and (input[21] != input[2]) and (input[21] != input[7]) and (input[21] != input[8]) and (input[21] != input[10]) and (input[21] != input[11]) and (input[21] != input[16]) and (input[21] != input[17]) and (input[22] != input[0]) and (input[22] != input[2]) and (input[22] != input[6]) and (input[22] != input[8]) and (input[22] != input[9]) and (input[22] != input[11]) and (input[22] != input[15]) and (input[22] != input[17]) and (input[23] != input[0]) and (input[23] != input[1]) and (input[23] != input[6]) and (input[23] != input[7]) and (input[23] != input[9]) and (input[23] != input[10]) and (input[23] != input[15]) and (input[23] != input[16]) and (input[24] != input[1]) and (input[24] != input[2]) and (input[24] != input[4]) and (input[24] != input[5]) and (input[24] != input[10]) and (input[24] != input[11]) and (input[24] != input[13]) and (input[24] != input[14]) and (input[25] != input[0]) and (input[25] != input[2]) and (input[25] != input[3]) and (input[25] != input[5]) and (input[25] != input[9]) and (input[25] != input[11]) and (input[25] != input[12]) and (input[25] != input[14]) and (input[26] != input[0]) and (input[26] != input[1]) and (input[26] != input[3]) and (input[26] != input[4]) and (input[26] != input[9]) and (input[26] != input[10]) and (input[26] != input[12]) and (input[26] != input[13])
 
 def parallel_for_fill():
     CHUNKSIZE = 2**14 #arbitrary value - too low and youll slow down too much
@@ -107,10 +118,9 @@ def executorcube(file_number):
             input_b6=switch(input_b6)
 
             if cube_verification(input_b6): #true means: it makes sense to check this input. 
-                if valid_coloring(input_b6,M):
-                    with open('data/save_to_look_at.txt', 'a') as f:
-                        input_b6=switch(input_b6)
-                        f.write(input_b6+'\n')
+                with open('data/save_to_look_at.txt', 'a') as f:
+                    input_b6=switch(input_b6)
+                    f.write(input_b6+'\n')
         with open('data/slices/slice_'+file_id, 'w') as f:
             input_b6=switch(input_b6)
             f.write(input_b6[3:])
